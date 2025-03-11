@@ -2,7 +2,17 @@ import subprocess
 import time
 import base64
 from openai import OpenAI
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+
+api_key = os.getenv("OPENAI_API_KEY")
+
+if not api_key:
+    api_key = input("Enter your OpenAI API key: ")
+
+client = OpenAI(api_key=api_key)
 
 def docker_exec(cmd: str, container_name: str, decode=True) -> str:
     """Executes a command inside a Docker container."""
@@ -65,8 +75,6 @@ def handle_model_action(vm: VM, action):
     except Exception as e:
         print(f"Error handling action {action}: {e}")
 
-
-client = OpenAI()
 
 def computer_use_loop(vm: VM, response):
     """Loops through and executes computer actions until none remain."""
