@@ -94,6 +94,7 @@ def computer_use_loop(vm: VM, response):
 
         screenshot_bytes = get_screenshot(vm)
         screenshot_base64 = base64.b64encode(screenshot_bytes).decode("utf-8")
+        print(screenshot_base64)
 
         response = client.responses.create(
             model="computer-use-preview",
@@ -103,7 +104,7 @@ def computer_use_loop(vm: VM, response):
                     "type": "computer_use_preview",
                     "display_width": 1024,
                     "display_height": 768,
-                    "environment": "browser",
+                    "environment": "linux",
                 }
             ],
             input=[
@@ -124,6 +125,23 @@ def computer_use_loop(vm: VM, response):
 
 if __name__ == "__main__":
     vm_instance = VM(display=":99", container_name="cua-image")
-    user_input = input("Enter command or action: ")
-    response = client.responses.create(model="computer-use-preview", input=[{"type": "text", "text": user_input}])
+    user_input = input("> ")
+    response = client.responses.create(
+        model="computer-use-preview", 
+        tools=[
+            {
+                "type": "computer_use_preview",
+                "display_width": 1024,
+                "display_height": 768,
+                "environment": "linux",
+            }
+        ],
+        input=[
+            {
+                "role": "user", 
+                "content": user_input
+            }
+        ],
+        truncation="auto",
+    )
     computer_use_loop(vm_instance, response)
